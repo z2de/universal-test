@@ -80,17 +80,25 @@ local function refreshSettings()
     _G.AimbotMouseBind = Settings.Aimbot.MouseBind
     _G.AimbotKeyBind = Settings.Aimbot.KeyBind
 
-    -- Update any active PlayerEffects when settings change
-    for player, highlight in pairs(Outlines) do
-        if highlight and highlight.Parent then
-            if Settings.PlayerEffects.Mode == "Outline" then
-                highlight.FillTransparency = 1
-                highlight.OutlineTransparency = _G.OutlineEnabled and Settings.PlayerEffects.OutlineTransparency or 1
-                highlight.OutlineColor = Settings.PlayerEffects.Color
-            else -- Chams mode
-                highlight.FillTransparency = Settings.PlayerEffects.ChamsTransparency
-                highlight.OutlineTransparency = 1
-                highlight.FillColor = Settings.PlayerEffects.FillColor
+    -- Only update PlayerEffects if Outlines table exists and has entries
+    if Outlines then
+        for player, highlight in pairs(Outlines) do
+            if highlight and highlight.Parent then
+                if Settings.PlayerEffects.Mode == "Outline" then
+                    highlight.FillTransparency = 1
+                    highlight.OutlineTransparency = _G.OutlineEnabled and Settings.PlayerEffects.OutlineTransparency or 1
+                    highlight.OutlineColor = Settings.PlayerEffects.Color
+                else -- Chams mode
+                    if _G.OutlineEnabled then
+                        highlight.FillTransparency = Settings.PlayerEffects.ChamsTransparency
+                        highlight.FillColor = Settings.PlayerEffects.FillColor
+                        highlight.OutlineColor = Settings.PlayerEffects.ChamsGlowColor
+                        highlight.OutlineTransparency = 0.5
+                    else
+                        highlight.FillTransparency = 1
+                        highlight.OutlineTransparency = 1
+                    end
+                end
             end
         end
     end
@@ -366,20 +374,25 @@ end
 _G.playerEffects = function()
     _G.OutlineEnabled = not _G.OutlineEnabled
     
-    for player, highlight in pairs(Outlines) do
-        if highlight and highlight.Parent then
-            if not _G.OutlineEnabled then
-                -- When disabling, set both transparencies to 1 (invisible)
-                highlight.OutlineTransparency = 1
-                highlight.FillTransparency = 1
-            else
-                -- When enabling, apply proper transparencies based on mode
-                if Settings.PlayerEffects.Mode == "Outline" then
-                    highlight.OutlineTransparency = Settings.PlayerEffects.OutlineTransparency
-                    highlight.FillTransparency = 1
-                else  -- Chams mode
+    if Outlines then  -- Check if Outlines exists
+        for player, highlight in pairs(Outlines) do
+            if highlight and highlight.Parent then
+                if not _G.OutlineEnabled then
+                    -- When disabling, always set both transparencies to 1 (invisible)
                     highlight.OutlineTransparency = 1
-                    highlight.FillTransparency = Settings.PlayerEffects.ChamsTransparency
+                    highlight.FillTransparency = 1
+                else
+                    -- When enabling, apply proper transparencies based on mode
+                    if Settings.PlayerEffects.Mode == "Outline" then
+                        highlight.OutlineTransparency = Settings.PlayerEffects.OutlineTransparency
+                        highlight.FillTransparency = 1
+                        highlight.OutlineColor = Settings.PlayerEffects.Color
+                    else  -- Chams mode
+                        highlight.FillTransparency = Settings.PlayerEffects.ChamsTransparency
+                        highlight.FillColor = Settings.PlayerEffects.FillColor
+                        highlight.OutlineColor = Settings.PlayerEffects.ChamsGlowColor
+                        highlight.OutlineTransparency = 0.5
+                    end
                 end
             end
         end
@@ -509,7 +522,7 @@ local function GetClosestPlayer()
                                     shortestDistance = distance
                                 end
                             end
-                        elseif _G.AimbotFOVShape == "Box" then
+                        elseif _G.AimbotFOVShape == "Square" then
                             if math.abs(fovOrigin.X - partPos.X) > _G.AimbotFOVSize/2 or math.abs(fovOrigin.Y - partPos.Y) > _G.AimbotFOVSize/2 then
                                 -- Skip this candidate if outside square FOV
                             else
@@ -666,7 +679,7 @@ _G.aimbotFOVToggle = function()
 end
 
 _G.aimbotFOVSetShape = function(shape)
-    if shape == "Circle" or shape == "Box" then
+    if shape == "Circle" or shape == "Square" then  -- Changed from "Box"
         _G.AimbotFOVShape = shape
     end
 end
@@ -886,7 +899,7 @@ RunService.RenderStepped:Connect(function()
             aimbotFOVIndicator.Thickness = 1
         else
             if (_G.AimbotFOVShape == "Circle" and aimbotFOVIndicator.ClassName ~= "Circle") or 
-               (_G.AimbotFOVShape == "Box" and aimbotFOVIndicator.ClassName ~= "Square") then
+               (_G.AimbotFOVShape == "Square" and aimbotFOVIndicator.ClassName ~= "Square") then  -- Changed from "Box"
                 aimbotFOVIndicator:Remove()
                 if _G.AimbotFOVShape == "Circle" then
                     aimbotFOVIndicator = Drawing.new("Circle")
