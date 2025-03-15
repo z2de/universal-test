@@ -325,10 +325,35 @@ local function GetClosestPlayer()
             if player ~= localPlayer and player.Character and player.Character:FindFirstChild(_G.AimbotPart) then
                 local partPos = camera:WorldToViewportPoint(player.Character[_G.AimbotPart].Position)
                 if partPos.Z > 0 then
-                    local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
-                    if distance < shortestDistance then
-                        closestPlayer = player
-                        shortestDistance = distance
+                    if _G.AimbotFOVEnabled then
+                        if _G.AimbotFOVShape == "Circle" then
+                            local fovDist = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
+                            if fovDist > _G.AimbotFOVSize then
+                                -- Skip this candidate if outside circular FOV
+                            else
+                                local distance = fovDist
+                                if distance < shortestDistance then
+                                    closestPlayer = player
+                                    shortestDistance = distance
+                                end
+                            end
+                        elseif _G.AimbotFOVShape == "Box" then
+                            if math.abs(mousePos.X - partPos.X) > _G.AimbotFOVSize/2 or math.abs(mousePos.Y - partPos.Y) > _G.AimbotFOVSize/2 then
+                                -- Skip this candidate if outside square FOV
+                            else
+                                local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
+                                if distance < shortestDistance then
+                                    closestPlayer = player
+                                    shortestDistance = distance
+                                end
+                            end
+                        end
+                    else
+                        local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
+                        if distance < shortestDistance then
+                            closestPlayer = player
+                            shortestDistance = distance
+                        end
                     end
                 end
             end
