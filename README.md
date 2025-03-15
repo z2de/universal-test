@@ -35,17 +35,23 @@ _G.AimbotFOVShape = Settings.Aimbot.FOV.Shape
 _G.AimbotFOVSize = Settings.Aimbot.FOV.Size
 _G.AimbotFOVMethod = Settings.Aimbot.FOV.Method  -- New global variable
 
--- New function to set the FOV method
+-- New function to set the FOV method (modified)
 _G.aimbotFOVSetMethod = function(method)
-	if method == "FollowMouse" or method == "Center" then
-		_G.AimbotFOVMethod = method
-	end
+    if method == "FollowMouse" or method == "Center" then
+        _G.AimbotFOVMethod = method
+        -- Remove existing FOV indicator to prevent duplicates
+        if aimbotFOVIndicator then
+            aimbotFOVIndicator:Remove()
+            aimbotFOVIndicator = nil
+        end
+    end
 end
 
 local ESPBoxes = {}
 local NameLabels = {}
 local Outlines = {}
 local Tracers = {}
+local HealthBars = {}  -- New table for health bar drawings
 local IsAiming = false
 local IsCFrameSpeedActive = false
 local IsOrbiting = false
@@ -115,6 +121,15 @@ local function CreateESPBox(player)
     tracer.Thickness = Settings.Tracer.Thickness
     tracer.Transparency = Settings.Tracer.Transparency
     Tracers[player] = tracer
+
+    if Settings.ESP.HealthBar and Settings.ESP.HealthBar.Enabled then
+        local healthBar = Drawing.new("Square")
+        healthBar.Visible = _G.ESPEnabled
+        healthBar.Filled = true
+        healthBar.Thickness = 0
+        healthBar.Color = Settings.ESP.HealthBar.Color
+        HealthBars[player] = healthBar
+    end
     
     return box
 end
@@ -124,6 +139,7 @@ local function UpdateESPBox(player, box)
         box.Visible = false
         if NameLabels[player] then NameLabels[player].Visible = false end
         if Tracers[player] then Tracers[player].Visible = false end
+        if HealthBars[player] then HealthBars[player].Visible = false end
         return
     end
     
@@ -135,8 +151,24 @@ local function UpdateESPBox(player, box)
         box.Size = size
         box.Position = Vector2.new(vector.X - size.X / 2, vector.Y - size.Y / 2)
         box.Visible = true
+
+        if HealthBars[player] and Settings.ESP.HealthBar and Settings.ESP.HealthBar.Enabled then
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            if humanoid then
+                local healthPerc = humanoid.Health / humanoid.MaxHealth
+                local barWidth = Settings.ESP.HealthBar.Width
+                local barHeight = size.Y * healthPerc
+                -- Position: on left side of the box
+                HealthBars[player].Size = Vector2.new(barWidth, barHeight)
+                HealthBars[player].Position = Vector2.new(box.Position.X - barWidth - 2, box.Position.Y)
+                HealthBars[player].Visible = true
+            else
+                HealthBars[player].Visible = false
+            end
+        end
     else
         box.Visible = false
+        if HealthBars[player] then HealthBars[player].Visible = false end
     end
     
     if NameLabels[player] and onScreen then
@@ -176,6 +208,10 @@ local function RemoveESPBox(player)
     if Tracers[player] then
         Tracers[player]:Remove()
         Tracers[player] = nil
+    end
+    if HealthBars[player] then
+        HealthBars[player]:Remove()
+        HealthBars[player] = nil
     end
 end
 
