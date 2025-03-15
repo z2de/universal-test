@@ -80,24 +80,26 @@ local function refreshSettings()
     _G.AimbotMouseBind = Settings.Aimbot.MouseBind
     _G.AimbotKeyBind = Settings.Aimbot.KeyBind
 
-    -- Update ESP Boxes
-    for player, box in pairs(ESPBoxes) do
-        if box and box.Remove then
-            box.Color = Settings.ESP.BoxColor
-            box.Thickness = Settings.ESP.BoxThickness
-            box.Transparency = Settings.ESP.BoxTransparency
+    -- Only update visual elements if their tables exist
+    if ESPBoxes then
+        for player, box in pairs(ESPBoxes) do
+            if box and box.Remove then
+                box.Color = Settings.ESP.BoxColor
+                box.Thickness = Settings.ESP.BoxThickness
+                box.Transparency = Settings.ESP.BoxTransparency
+            end
         end
     end
 
-    -- Update Name ESP
-    for player, nameLabel in pairs(NameLabels) do
-        if nameLabel and nameLabel.Remove then
-            nameLabel.Color = Settings.NameESP.Color
-            nameLabel.Size = Settings.NameESP.Size
+    if NameLabels then
+        for player, nameLabel in pairs(NameLabels) do
+            if nameLabel and nameLabel.Remove then
+                nameLabel.Color = Settings.NameESP.Color
+                nameLabel.Size = Settings.NameESP.Size
+            end
         end
     end
 
-    -- Update Player Effects (Highlights)
     if Outlines then
         for player, highlight in pairs(Outlines) do
             if highlight and highlight.Parent then
@@ -120,19 +122,21 @@ local function refreshSettings()
         end
     end
 
-    -- Update Tracers
-    for player, tracer in pairs(Tracers) do
-        if tracer and tracer.Remove then
-            tracer.Color = Settings.Tracer.Color
-            tracer.Thickness = Settings.Tracer.Thickness
-            tracer.Transparency = Settings.Tracer.Transparency
+    if Tracers then
+        for player, tracer in pairs(Tracers) do
+            if tracer and tracer.Remove then
+                tracer.Color = Settings.Tracer.Color
+                tracer.Thickness = Settings.Tracer.Thickness
+                tracer.Transparency = Settings.Tracer.Transparency
+            end
         end
     end
 
-    -- Update Health Bars
-    for player, healthBar in pairs(HealthBars) do
-        if healthBar and healthBar.Remove then
-            healthBar.Color = Settings.ESP.HealthBar.Color
+    if HealthBars then
+        for player, healthBar in pairs(HealthBars) do
+            if healthBar and healthBar.Remove then
+                healthBar.Color = Settings.ESP.HealthBar.Color
+            end
         end
     end
 
