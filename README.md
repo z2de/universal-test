@@ -80,7 +80,24 @@ local function refreshSettings()
     _G.AimbotMouseBind = Settings.Aimbot.MouseBind
     _G.AimbotKeyBind = Settings.Aimbot.KeyBind
 
-    -- Only update PlayerEffects if Outlines table exists and has entries
+    -- Update ESP Boxes
+    for player, box in pairs(ESPBoxes) do
+        if box and box.Remove then
+            box.Color = Settings.ESP.BoxColor
+            box.Thickness = Settings.ESP.BoxThickness
+            box.Transparency = Settings.ESP.BoxTransparency
+        end
+    end
+
+    -- Update Name ESP
+    for player, nameLabel in pairs(NameLabels) do
+        if nameLabel and nameLabel.Remove then
+            nameLabel.Color = Settings.NameESP.Color
+            nameLabel.Size = Settings.NameESP.Size
+        end
+    end
+
+    -- Update Player Effects (Highlights)
     if Outlines then
         for player, highlight in pairs(Outlines) do
             if highlight and highlight.Parent then
@@ -100,6 +117,33 @@ local function refreshSettings()
                     end
                 end
             end
+        end
+    end
+
+    -- Update Tracers
+    for player, tracer in pairs(Tracers) do
+        if tracer and tracer.Remove then
+            tracer.Color = Settings.Tracer.Color
+            tracer.Thickness = Settings.Tracer.Thickness
+            tracer.Transparency = Settings.Tracer.Transparency
+        end
+    end
+
+    -- Update Health Bars
+    for player, healthBar in pairs(HealthBars) do
+        if healthBar and healthBar.Remove then
+            healthBar.Color = Settings.ESP.HealthBar.Color
+        end
+    end
+
+    -- Update FOV Indicator
+    if aimbotFOVIndicator and _G.AimbotFOVEnabled then
+        local needsRecreate = (_G.AimbotFOVShape == "Circle" and aimbotFOVIndicator.ClassName ~= "Circle") or
+                             (_G.AimbotFOVShape == "Square" and aimbotFOVIndicator.ClassName ~= "Square")
+        
+        if needsRecreate then
+            aimbotFOVIndicator:Remove()
+            aimbotFOVIndicator = nil
         end
     end
 end
