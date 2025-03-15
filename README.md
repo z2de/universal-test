@@ -353,7 +353,20 @@ _G.playerEffects = function()
     
     for player, highlight in pairs(Outlines) do
         if highlight and highlight.Parent then
-            highlight.OutlineTransparency = _G.OutlineEnabled and 0 or 1
+            if not _G.OutlineEnabled then
+                -- When disabling, set both transparencies to 1 (invisible)
+                highlight.OutlineTransparency = 1
+                highlight.FillTransparency = 1
+            else
+                -- When enabling, apply proper transparencies based on mode
+                if Settings.PlayerEffects.Mode == "Outline" then
+                    highlight.OutlineTransparency = Settings.PlayerEffects.OutlineTransparency
+                    highlight.FillTransparency = 1
+                else  -- Chams mode
+                    highlight.OutlineTransparency = 1
+                    highlight.FillTransparency = Settings.PlayerEffects.ChamsTransparency
+                end
+            end
         end
     end
     
