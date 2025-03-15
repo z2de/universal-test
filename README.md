@@ -236,23 +236,33 @@ end
 
 local function RemoveESPBox(player)
     if ESPBoxes[player] then
-        ESPBoxes[player]:Remove()
+        if type(ESPBoxes[player].Remove) == "function" then
+            ESPBoxes[player]:Remove()
+        end
         ESPBoxes[player] = nil
     end
     if NameLabels[player] then
-        NameLabels[player]:Remove()
+        if type(NameLabels[player].Remove) == "function" then
+            NameLabels[player]:Remove()
+        end
         NameLabels[player] = nil
     end
     if Outlines[player] then
-        Outlines[player]:Destroy()
+        if type(Outlines[player].Destroy) == "function" then
+            Outlines[player]:Destroy()
+        end
         Outlines[player] = nil
     end
     if Tracers[player] then
-        Tracers[player]:Remove()
+        if type(Tracers[player].Remove) == "function" then
+            Tracers[player]:Remove()
+        end
         Tracers[player] = nil
     end
     if HealthBars[player] then
-        HealthBars[player]:Remove()
+        if type(HealthBars[player].Remove) == "function" then
+            HealthBars[player]:Remove()
+        end
         HealthBars[player] = nil
     end
 end
