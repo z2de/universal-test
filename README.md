@@ -33,6 +33,14 @@ _G.AimbotToggle = Settings.Aimbot.Toggle
 _G.AimbotFOVEnabled = Settings.Aimbot.FOV.Enabled
 _G.AimbotFOVShape = Settings.Aimbot.FOV.Shape
 _G.AimbotFOVSize = Settings.Aimbot.FOV.Size
+_G.AimbotFOVMethod = Settings.Aimbot.FOV.Method  -- New global variable
+
+-- New function to set the FOV method
+_G.aimbotFOVSetMethod = function(method)
+	if method == "FollowMouse" or method == "Center" then
+		_G.AimbotFOVMethod = method
+	end
+end
 
 local ESPBoxes = {}
 local NameLabels = {}
@@ -298,6 +306,16 @@ _G.tracerOrigin = function(origin)
     end
 end
 
+local function GetFOVOrigin()
+    if _G.AimbotFOVMethod == "FollowMouse" then
+        return UserInputService:GetMouseLocation()
+    else
+        local camera = workspace.CurrentCamera
+        local viewportSize = camera.ViewportSize
+        return Vector2.new(viewportSize.X/2, viewportSize.Y/2)
+    end
+end
+
 local function GetClosestPlayer()
     -- If sticky aim is enabled and we have a valid target, stick to it
     if _G.StickyAimEnabled and CurrentTarget and 
@@ -318,7 +336,7 @@ local function GetClosestPlayer()
         local closestPlayer = nil
         local shortestDistance = math.huge
         local localPlayer = Players.LocalPlayer
-        local mousePos = UserInputService:GetMouseLocation()
+        local fovOrigin = GetFOVOrigin()  -- use the FOV origin based on method
         local camera = workspace.CurrentCamera
 
         for _, player in ipairs(Players:GetPlayers()) do
@@ -327,7 +345,7 @@ local function GetClosestPlayer()
                 if partPos.Z > 0 then
                     if _G.AimbotFOVEnabled then
                         if _G.AimbotFOVShape == "Circle" then
-                            local fovDist = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
+                            local fovDist = (Vector2.new(fovOrigin.X, fovOrigin.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
                             if fovDist > _G.AimbotFOVSize then
                                 -- Skip this candidate if outside circular FOV
                             else
@@ -338,10 +356,10 @@ local function GetClosestPlayer()
                                 end
                             end
                         elseif _G.AimbotFOVShape == "Box" then
-                            if math.abs(mousePos.X - partPos.X) > _G.AimbotFOVSize/2 or math.abs(mousePos.Y - partPos.Y) > _G.AimbotFOVSize/2 then
+                            if math.abs(fovOrigin.X - partPos.X) > _G.AimbotFOVSize/2 or math.abs(fovOrigin.Y - partPos.Y) > _G.AimbotFOVSize/2 then
                                 -- Skip this candidate if outside square FOV
                             else
-                                local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
+                                local distance = (Vector2.new(fovOrigin.X, fovOrigin.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
                                 if distance < shortestDistance then
                                     closestPlayer = player
                                     shortestDistance = distance
@@ -349,7 +367,7 @@ local function GetClosestPlayer()
                             end
                         end
                     else
-                        local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
+                        local distance = (Vector2.new(fovOrigin.X, fovOrigin.Y) - Vector2.new(partPos.X, partPos.Y)).Magnitude
                         if distance < shortestDistance then
                             closestPlayer = player
                             shortestDistance = distance
@@ -729,13 +747,13 @@ RunService.RenderStepped:Connect(function()
             end
         end
 
-        local mousePos = UserInputService:GetMouseLocation()
+        local origin = GetFOVOrigin()  -- use new FOV origin
         if _G.AimbotFOVShape == "Circle" then
             aimbotFOVIndicator.Radius = _G.AimbotFOVSize
-            aimbotFOVIndicator.Position = mousePos
+            aimbotFOVIndicator.Position = origin
         else
             aimbotFOVIndicator.Size = Vector2.new(_G.AimbotFOVSize, _G.AimbotFOVSize)
-            aimbotFOVIndicator.Position = Vector2.new(mousePos.X - _G.AimbotFOVSize/2, mousePos.Y - _G.AimbotFOVSize/2)
+            aimbotFOVIndicator.Position = Vector2.new(origin.X - _G.AimbotFOVSize/2, origin.Y - _G.AimbotFOVSize/2)
         end
     else
         if aimbotFOVIndicator then
