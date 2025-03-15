@@ -6,7 +6,7 @@ local Settings = getgenv().Settings
 
 _G.ESPEnabled = Settings.ESP.Enabled
 _G.NameESPEnabled = Settings.NameESP.Enabled
-_G.OutlineEnabled = Settings.Outline.Enabled
+_G.OutlineEnabled = Settings.PlayerEffects.Enabled  -- Updated from PlayersMT
 _G.AimbotEnabled = Settings.Aimbot.Enabled
 _G.AimbotSmoothness = Settings.Aimbot.Smoothness
 _G.AimbotPart = Settings.Aimbot.TargetPart
@@ -52,7 +52,7 @@ local function refreshSettings()
     Settings = getgenv().Settings  -- Fix typo from 'Settingsngs'
     _G.ESPEnabled = Settings.ESP.Enabled
     _G.NameESPEnabled = Settings.NameESP.Enabled
-    _G.OutlineEnabled = Settings.Outline.Enabled
+    _G.OutlineEnabled = Settings.PlayerEffects.Enabled  -- Updated from PlayersMT
     _G.AimbotEnabled = Settings.Aimbot.Enabled
     _G.AimbotSmoothness = Settings.Aimbot.Smoothness
     _G.AimbotPart = Settings.Aimbot.TargetPart
@@ -148,9 +148,9 @@ local function CreateESPBox(player)
     NameLabels[player] = nameText
     
     local highlight = Instance.new("Highlight")
-    highlight.FillColor = Settings.Outline.FillColor
-    highlight.FillTransparency = Settings.Outline.FillTransparency
-    highlight.OutlineColor = _G.TeamCheckEnabled and color or Settings.Outline.Color
+    highlight.FillColor = Settings.PlayerEffects.FillColor
+    highlight.FillTransparency = Settings.PlayerEffects.FillTransparency
+    highlight.OutlineColor = _G.TeamCheckEnabled and color or Settings.PlayerEffects.Color
     highlight.OutlineTransparency = _G.OutlineEnabled and 0 or 1
     highlight.Parent = player.Character
     Outlines[player] = highlight
@@ -344,7 +344,7 @@ _G.nameESP = function()
     end
 end
 
-_G.outline = function()
+_G.playerEffects = function()
     _G.OutlineEnabled = not _G.OutlineEnabled
     
     for player, highlight in pairs(Outlines) do
@@ -362,6 +362,34 @@ _G.outline = function()
     end
 end
 
+_G.playerEffectsSetColor = function(newColor)
+    if typeof(newColor) == "Color3" then
+        for player, highlight in pairs(Outlines) do
+            if highlight and highlight.Parent then
+                highlight.FillColor = newColor
+                highlight.OutlineColor = newColor
+            end
+        end
+    end
+end
+
+_G.playerEffectsSetMode = function(mode)
+    if mode == "Outline" or mode == "Chams" then
+        Settings.PlayerEffects.Mode = mode
+        for player, highlight in pairs(Outlines) do
+            if highlight and highlight.Parent then
+                if mode == "Outline" then
+                    highlight.FillTransparency = 1
+                    highlight.OutlineTransparency = _G.OutlineEnabled and 0 or 1
+                else
+                    highlight.FillTransparency = 0.5
+                    highlight.OutlineTransparency = 1
+                end
+            end
+        end
+    end
+end
+
 _G.teamCheck = function()
     _G.TeamCheckEnabled = not _G.TeamCheckEnabled
     
@@ -373,7 +401,7 @@ _G.teamCheck = function()
         
         if box then box.Color = color end
         if NameLabels[player] then NameLabels[player].Color = color or Settings.NameESP.Color end
-        if Outlines[player] then Outlines[player].OutlineColor = color or Settings.Outline.Color end
+        if Outlines[player] then Outlines[player].OutlineColor = color or Settings.PlayerEffects.Color end
         if Tracers[player] then Tracers[player].Color = color or Settings.Tracer.Color end
     end
 end
