@@ -191,8 +191,10 @@ local function UpdateESPBox(player, box)
     local vector, onScreen = camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
     
     if onScreen and _G.ESPEnabled then
-        -- Use fixed box size (2900 x 4800) regardless of settings
-        local size = Vector2.new(2900 / vector.Z, 4800 / vector.Z)
+        -- Use fixed size values (2900 x 4800) instead of Settings.ESP.BoxSize
+        local fixedWidth = 2900
+        local fixedHeight = 4800
+        local size = Vector2.new(fixedWidth / vector.Z, fixedHeight / vector.Z)
         box.Size = size
         box.Position = Vector2.new(vector.X - size.X / 2, vector.Y - size.Y / 2)
         box.Visible = true
