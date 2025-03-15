@@ -2,6 +2,10 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
+-- Add these constants at the top
+local ESP_BOX_WIDTH = 2900
+local ESP_BOX_HEIGHT = 4800
+
 local Settings = getgenv().Settings
 
 _G.ESPEnabled = Settings.ESP.Enabled
@@ -191,10 +195,8 @@ local function UpdateESPBox(player, box)
     local vector, onScreen = camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
     
     if onScreen and _G.ESPEnabled then
-        -- Use fixed size values (2900 x 4800) instead of Settings.ESP.BoxSize
-        local fixedWidth = 2900
-        local fixedHeight = 4800
-        local size = Vector2.new(fixedWidth / vector.Z, fixedHeight / vector.Z)
+        -- Use the constants defined at the top
+        local size = Vector2.new(ESP_BOX_WIDTH / vector.Z, ESP_BOX_HEIGHT / vector.Z)
         box.Size = size
         box.Position = Vector2.new(vector.X - size.X / 2, vector.Y - size.Y / 2)
         box.Visible = true
