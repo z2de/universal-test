@@ -53,15 +53,14 @@ end
 
 -- New: Function to update global settings from getgenv().Settings
 local function refreshSettings()
-	Settings = getgenv().Settingsngs
-	_G.ESPEnabled = Settings.ESP.EnabledBoxSize since we use constants now
-	_G.NameESPEnabled = Settings.NameESP.Enabled
-	_G.OutlineEnabled = Settings.Outline.Enabledled
-	_G.AimbotEnabled = Settings.Aimbot.Enabledabled
-	_G.AimbotSmoothness = Settings.Aimbot.Smoothness
-	_G.AimbotPart = Settings.Aimbot.TargetPartmoothness
-	_G.AimbotKey = Settings.Aimbot.Key.TargetPart
-	_G.AimbotMethod = Settings.Aimbot.Method
+    Settings = getgenv().Settings  -- Fix typo from 'Settingsngs'
+    _G.ESPEnabled = Settings.ESP.Enabled
+    _G.NameESPEnabled = Settings.NameESP.Enabled
+    _G.OutlineEnabled = Settings.Outline.Enabled
+    _G.AimbotEnabled = Settings.Aimbot.Enabled
+    _G.AimbotSmoothness = Settings.Aimbot.Smoothness
+    _G.AimbotPart = Settings.Aimbot.TargetPart
+    _G.AimbotKey = Settings.Aimbot.Key
     _G.AimbotMethod = Settings.Aimbot.Method
     _G.StickyAimEnabled = Settings.Aimbot.StickyAim
     _G.AimbotToggle = Settings.Aimbot.Toggle
