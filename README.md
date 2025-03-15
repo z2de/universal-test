@@ -149,9 +149,13 @@ local function CreateESPBox(player)
     
     local highlight = Instance.new("Highlight")
     highlight.FillColor = Settings.PlayerEffects.FillColor
-    highlight.FillTransparency = Settings.PlayerEffects.FillTransparency
+    highlight.FillTransparency = Settings.PlayerEffects.Mode == "Chams" 
+        and Settings.PlayerEffects.ChamsTransparency 
+        or Settings.PlayerEffects.FillTransparency
     highlight.OutlineColor = _G.TeamCheckEnabled and color or Settings.PlayerEffects.Color
-    highlight.OutlineTransparency = _G.OutlineEnabled and 0 or 1
+    highlight.OutlineTransparency = Settings.PlayerEffects.Mode == "Outline"
+        and (_G.OutlineEnabled and Settings.PlayerEffects.OutlineTransparency or 1)
+        or 1
     highlight.Parent = player.Character
     Outlines[player] = highlight
 
@@ -380,9 +384,9 @@ _G.playerEffectsSetMode = function(mode)
             if highlight and highlight.Parent then
                 if mode == "Outline" then
                     highlight.FillTransparency = 1
-                    highlight.OutlineTransparency = _G.OutlineEnabled and 0 or 1
-                else
-                    highlight.FillTransparency = 0.5
+                    highlight.OutlineTransparency = _G.OutlineEnabled and Settings.PlayerEffects.OutlineTransparency or 1
+                else -- Chams mode
+                    highlight.FillTransparency = Settings.PlayerEffects.ChamsTransparency
                     highlight.OutlineTransparency = 1
                 end
             end
