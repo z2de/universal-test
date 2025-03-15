@@ -79,6 +79,21 @@ local function refreshSettings()
     _G.AimbotBindType = Settings.Aimbot.BindType
     _G.AimbotMouseBind = Settings.Aimbot.MouseBind
     _G.AimbotKeyBind = Settings.Aimbot.KeyBind
+
+    -- Update any active PlayerEffects when settings change
+    for player, highlight in pairs(Outlines) do
+        if highlight and highlight.Parent then
+            if Settings.PlayerEffects.Mode == "Outline" then
+                highlight.FillTransparency = 1
+                highlight.OutlineTransparency = _G.OutlineEnabled and Settings.PlayerEffects.OutlineTransparency or 1
+                highlight.OutlineColor = Settings.PlayerEffects.Color
+            else -- Chams mode
+                highlight.FillTransparency = Settings.PlayerEffects.ChamsTransparency
+                highlight.OutlineTransparency = 1
+                highlight.FillColor = Settings.PlayerEffects.FillColor
+            end
+        end
+    end
 end
 
 -- Spawn a loop to refresh settings every second.
@@ -398,9 +413,15 @@ _G.playerEffectsSetMode = function(mode)
                 if mode == "Outline" then
                     highlight.FillTransparency = 1
                     highlight.OutlineTransparency = _G.OutlineEnabled and Settings.PlayerEffects.OutlineTransparency or 1
+                    highlight.OutlineColor = Settings.PlayerEffects.Color
                 else -- Chams mode
                     highlight.FillTransparency = Settings.PlayerEffects.ChamsTransparency
                     highlight.OutlineTransparency = 1
+                    highlight.FillColor = Settings.PlayerEffects.FillColor
+                    
+                    -- Create glow effect by setting a bright outline
+                    highlight.OutlineColor = Settings.PlayerEffects.ChamsGlowColor
+                    highlight.OutlineTransparency = 0.5
                 end
             end
         end
