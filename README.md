@@ -907,21 +907,20 @@ end
 RunService.Heartbeat:Connect(UpdateFly)
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Settings.Fly.Key then
-        if _G.FlyEnabled then
-            IsFlyActive = not IsFlyActive
-            if IsFlyActive then
-                StartFly()
-            else
-                StopFly()
-            end
+    if not gameProcessed and input.KeyCode == Settings.Fly.Key and _G.FlyEnabled then
+        IsFlyActive = not IsFlyActive
+        if IsFlyActive then
+            StartFly()
+        else
+            StopFly()
         end
     end
 end)
 
 _G.fly = function()
     _G.FlyEnabled = not _G.FlyEnabled
-    if not _G.FlyEnabled and IsFlyActive then
+    -- Don't auto-activate fly when enabled
+    if not _G.FlyEnabled then
         IsFlyActive = false
         StopFly()
     end
