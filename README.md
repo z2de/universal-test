@@ -47,6 +47,50 @@ _G.aimbotFOVSetMethod = function(method)
     end
 end
 
+-- New: Function to update global settings from getgenv().Settings
+local function refreshSettings()
+	Settings = getgenv().Settings
+	_G.ESPEnabled = Settings.ESP.Enabled
+	_G.NameESPEnabled = Settings.NameESP.Enabled
+	_G.OutlineEnabled = Settings.Outline.Enabled
+	_G.AimbotEnabled = Settings.Aimbot.Enabled
+	_G.AimbotSmoothness = Settings.Aimbot.Smoothness
+	_G.AimbotPart = Settings.Aimbot.TargetPart
+	_G.AimbotKey = Settings.Aimbot.Key
+	_G.AimbotMethod = Settings.Aimbot.Method
+	_G.StickyAimEnabled = Settings.Aimbot.StickyAim
+	_G.AimbotToggle = Settings.Aimbot.Toggle
+
+	_G.AimbotFOVEnabled = Settings.Aimbot.FOV.Enabled
+	_G.AimbotFOVShape = Settings.Aimbot.FOV.Shape
+	_G.AimbotFOVSize = Settings.Aimbot.FOV.Size
+	_G.AimbotFOVMethod = Settings.Aimbot.FOV.Method
+
+	_G.TracerEnabled = Settings.Tracer.Enabled
+	_G.TracerOrigin = Settings.Tracer.Origin
+	_G.CFrameSpeedEnabled = Settings.CFrameSpeed.Enabled
+	_G.CFrameSpeedValue = Settings.CFrameSpeed.Speed
+	_G.OrbitEnabled = Settings.Orbit.Enabled
+	_G.OrbitHeight = Settings.Orbit.Height
+	_G.OrbitSpeed = Settings.Orbit.Speed
+	_G.OrbitDistance = Settings.Orbit.Distance
+	_G.OrbitFaceTarget = Settings.Orbit.FaceTarget
+	_G.FlyEnabled = Settings.Fly.Enabled
+	_G.FlySpeed = Settings.Fly.Speed
+	_G.TeamCheckEnabled = Settings.TeamCheck.Enabled
+	_G.AimbotBindType = Settings.Aimbot.BindType
+	_G.AimbotMouseBind = Settings.Aimbot.MouseBind
+	_G.AimbotKeyBind = Settings.Aimbot.KeyBind
+end
+
+-- Spawn a loop to refresh settings every second.
+task.spawn(function()
+	while true do
+		refreshSettings()
+		task.wait(1)
+	end
+end)
+
 local ESPBoxes = {}
 local NameLabels = {}
 local Outlines = {}
