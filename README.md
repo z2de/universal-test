@@ -191,7 +191,8 @@ local function UpdateESPBox(player, box)
     local vector, onScreen = camera:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
     
     if onScreen and _G.ESPEnabled then
-        local size = Vector2.new(Settings.ESP.BoxSize.Width / vector.Z, Settings.ESP.BoxSize.Height / vector.Z)
+        -- Use fixed box size (2900x4800) regardless of settings
+        local size = Vector2.new(2900 / vector.Z, 4800 / vector.Z)
         box.Size = size
         box.Position = Vector2.new(vector.X - size.X / 2, vector.Y - size.Y / 2)
         box.Visible = true
@@ -200,9 +201,9 @@ local function UpdateESPBox(player, box)
             local humanoid = player.Character:FindFirstChild("Humanoid")
             if humanoid then
                 local healthPerc = humanoid.Health / humanoid.MaxHealth
-                local barWidth = Settings.ESP.HealthBar.Width
+                local barWidth = 2  -- Fixed health bar width
                 local barHeight = size.Y * healthPerc
-                -- Position: on left side of the box
+                -- Place the health bar on the left side of the box
                 HealthBars[player].Size = Vector2.new(barWidth, barHeight)
                 HealthBars[player].Position = Vector2.new(box.Position.X - barWidth - 2, box.Position.Y)
                 HealthBars[player].Visible = true
